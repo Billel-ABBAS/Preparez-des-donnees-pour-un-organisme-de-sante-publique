@@ -1,60 +1,79 @@
-# Analyse des Données Open Food Facts
+# **Analyse des données Open Food Facts**
 
-## **Introduction**
-J'ai exploré les données d'Open Food Facts, une base de données sur les produits alimentaires, pour mieux comprendre la qualité nutritionnelle des produits. Le projet se concentre sur le nettoyage des données, l'analyse des catégories de produits, et l'étude des relations entre différents facteurs nutritionnels.
+## **Description du projet**
+Ce projet examine et analyse les données de la base Open Food Facts, une source ouverte de produits alimentaires du monde entier. L'objectif est de mieux comprendre les informations nutritionnelles, de corriger les données incomplètes, et de trouver des idées utiles pour améliorer les produits et leurs catégories.
 
 ---
 
-## **Étapes du Projet**
+## **Étapes principales**
 
-### **1. Nettoyage des Données**
-- J'ai supprimé les doublons et les valeurs inutilisables.
-- Remplacement des valeurs manquantes avec des méthodes adaptées :
-  - Imputation par la médiane.
-  - Techniques avancées comme `IterativeImputer` et `KNNImputer`.
-- Conversion des dates en un format correct.
-- Les données nettoyées ont été sauvegardées dans : `data_open_food_facts_cleaned.csv`.
+### **Étape 1 : Préparation des données**
+- **Chargement des données** :
+  - Utilisation de pandas pour lire et explorer le jeu de données.
+  - Affichage des premières lignes pour comprendre la structure et le contenu.
 
-### **2. Analyse des Données**
+- **Nettoyage des données** :
+  - Détection et gestion des données manquantes.
+  - Ajustement des types de données et traitement des colonnes de date.
 
-#### **A. Analyse des Caractéristiques Individuelles**
-- **Statistiques descriptives** : Moyenne, médiane, asymétrie (skewness), aplatissement (kurtosis).
-- **Graphiques** :
-  - Histogrammes, boxplots et diagrammes en barres.
-- **Observations** :
-  - Les produits riches en sel, sucre ou matières grasses présentent des valeurs extrêmes.
-  - Les catégories `sugary snacks` et `unknown` sont les plus représentées.
+---
 
-#### **B. Comparaison entre Variables**
-- **Corrélations** :
-  - Forte corrélation entre :
-    - Énergie (`energy_100g`) et matières grasses (`fat_100g`) : 0.75.
-    - Matières grasses (`fat_100g`) et saturées (`saturated-fat_100g`) : 0.73.
+### **Étape 2 : Analyse exploratoire**
+
+#### **Étude des principales colonnes** :
+- **Colonnes avec du texte** :
+  - Analyse des catégories de produits (`pnns_groups_1`) et des marques (`brands`).
+- **Colonnes avec des chiffres** :
+  - Étude des quantités d’énergie, de graisses, de sel, etc.
+
+#### **Traitement des données manquantes** :
+Trois méthodes principales ont été utilisées pour combler les données manquantes :
+1. **Remplir avec zéro** :
+   - Appliqué aux fibres (`fiber_100g`) pour les snacks salés (`salty snacks`).
+2. **Remplir avec des calculs** :
+   - Méthode qui estime les valeurs manquantes en utilisant les relations entre d’autres colonnes comme `energy_100g`, `fat_100g`, et `saturated-fat_100g`.
+3. **Remplir avec la médiane par catégorie** :
+   - Utilisé pour les colonnes comme `proteins_100g`, `sugars_100g`, et `salt_100g`, en fonction des catégories de produits (`pnns_groups_1`).
+
+#### **Suppression des lignes inutiles** :
+- Les produits sans date de création (`created_datetime`) ont été supprimés.
+
+---
+
+### **Étape 3 : Analyses statistiques**
+
+#### **Analyse simple d’une colonne**
+- **Objectif** : Étudier chaque colonne séparément pour mieux la comprendre.
+- **Points importants** :
+  - Certaines données comme `fat_100g`, `sugars_100g`, et `salt_100g` montrent une grande différence entre les produits.
+  - Les marques les plus fréquentes sont Carrefour et U.
+  - Les catégories les plus nombreuses sont `unknown` et `sugary snacks`.
+
+#### **Analyse entre deux colonnes**
+- **Corrélations entre chiffres** :
+  - Par exemple, les graisses et l’énergie sont fortement liées.
+- **Relations entre catégories** :
+  - Les produits très gras ou très salés obtiennent souvent une mauvaise note nutritionnelle (`nutrition_grade_fr`).
 - **Visualisations** :
-  - Matrice de corrélation et nuages de points.
-- **Relation entre catégories** :
-  - Le test Khi-Deux montre une relation significative entre les catégories de produits (`pnns_groups_1`) et leur note nutritionnelle (`nutrition_grade_fr`).
+  - Graphiques pour montrer les relations entre les colonnes.
 
-#### **C. Analyse Multi-Variée**
-- **ACP (Analyse en Composantes Principales)** :
-  - Réduction de dimensions pour comprendre les principaux facteurs influençant les produits.
-  - 4 composantes principales expliquent 90% de la variance :
-    - PC1 : Produits salés (`salt_100g`).
-    - PC2 : Produits gras (`fat_100g` et `saturated-fat_100g`).
-    - PC3 : Produits sucrés (`sugars_100g`).
-    - PC4 : Produits riches en fibres (`fiber_100g`).
-
-- **Projections des produits** :
-  - Les produits mal notés (`d`, `e`) sont associés à des quantités élevées de sel, graisses ou sucres.
-  - Les produits bien notés (`a`, `b`) sont riches en fibres et faibles en sel, graisses et sucres.
+#### **Analyse de plusieurs colonnes en même temps**
+- **Objectif** : Réduire les colonnes à quelques axes principaux pour simplifier l’analyse.
+- **Étapes** :
+  - Normalisation des données et analyse des axes principaux (comme salinité, graisses, et sucres).
+- **Visualisations** :
+  - Graphiques pour représenter les relations et regrouper les produits similaires.
 
 ---
 
-## **Principaux Résultats**
-1. Les produits riches en sel, graisses et sucres obtiennent les pires notes nutritionnelles (`d`, `e`).
-2. Les fruits, légumes et céréales sont bien notés (`a`, `b`).
-3. Certaines catégories comme `sugary snacks` et `fat and sauces` montrent une grande diversité dans leurs profils nutritionnels.
+### **Étape 4 : Résultats et conclusions**
 
+- **Ce qu’on a appris** :
+  - Les produits avec une mauvaise note nutritionnelle (`d` ou `e`) contiennent souvent beaucoup de sel, de sucre, et de graisses.
+  - Les produits bien notés (`a` ou `b`) sont riches en fibres et en céréales.
+  - L’énergie des produits est fortement liée à leur contenu en graisses.
 
+- **Recommandations** :
+  - Réduire la quantité de sel et de sucre pour améliorer les notes nutritionnelles.
 
 
